@@ -9,7 +9,7 @@ Additional documentation can be found at [www.getvines.com](http://www.getvines.
 This is a quick overview of the methods available in the API. See the examples/ directory
 for working demos.
 
-## Authenticate
+### Authenticate
 
 ```objectivec
 // replace with your account details
@@ -27,13 +27,15 @@ VinesCloud *vines = [[VinesCloud alloc] initWithDomain:domain];
 }];
 ```
 
-## User Management
+### User Management
 
 ```objectivec
+// count the number of user objects
 [vines.users count:^(NSNumber *count, VCError *error) {
     NSLog(@"user: count %@", count);
 }];
 
+// register a new user account
 NSString *username = [NSString stringWithFormat:@"hatter@%@", vines.domain];
 NSMutableDictionary *signup = [NSMutableDictionary dictionaryWithObjectsAndKeys:username, @"id", @"passw0rd", @"password", nil];
 [vines.users save:signup callback:^(NSMutableDictionary *result, VCError *error) {
@@ -41,6 +43,31 @@ NSMutableDictionary *signup = [NSMutableDictionary dictionaryWithObjectsAndKeys:
         NSLog(@"user: save failed %@", error);
     } else {
         NSLog(@"user: save succeeded %@", result);
+    }
+}];
+```
+
+### JSON Data Storage
+
+```objectivec
+VCStorage *comments = [app storageForClass:@"Comment"];
+
+// count the number of comment objects
+[comments count:^(NSNumber *count, VCError *error) {
+    NSLog(@"comment: count %@", count);
+}];
+
+// save a new comment to cloud storage, then update it
+NSMutableDictionary *comment = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"This is a comment!", @"text", nil];
+[comments save:comment callback:^(NSMutableDictionary *result, VCError *error) {
+    if (error) {
+        NSLog(@"comment: save failed %@", error);
+    } else {
+        NSLog(@"comment: save succeeded %@", result);
+        [result setObject:@"This is an updated comment!" forKey:@"text"];
+        [comments save:result callback:^(NSMutableDictionary *result, VCError *error) {
+            NSLog(@"comment: update succeeded %@", result);
+        }];
     }
 }];
 ```
