@@ -16,7 +16,8 @@
 
 /*
  * Replace the domain, username, and password below with the settings for your
- * Vines Cloud account.
+ * Vines Cloud account. All Vines Cloud API calls must occur after authenticating
+ * with a valid user (except new user signup, of course).
  */
 - (void)authenticateWithVinesCloud
 {
@@ -26,7 +27,163 @@
     
     vines = [[VinesCloud alloc] initWithDomain:domain];
     [vines authenticateWithUsername:username password:password callback:^(NSMutableDictionary *user, VCError *error) {
-        NSLog(@"authentication %@ %@", user, error);
+        NSLog(@"user: authentication %@ %@", user, error);
+        [self findVinesApps];
+    }];
+}
+
+/*
+ * A single Vines Cloud account may host several mobile apps. Find the list of
+ * apps in the account and use the first app for the rest of the example code.
+ */
+- (void)findVinesApps {
+    [vines.apps count:^(NSNumber *count, VCError *error) {
+        if (error) {
+            NSLog(@"app: count failed %@", error);
+        } else {
+            NSLog(@"app: count %@", count);
+        }
+    }];
+    
+    [vines.apps all:nil callback:^(NSMutableArray *rows, VCError *error) {
+        if (error) {
+            NSLog(@"app: find failed %@", error);
+            return;
+        }
+        NSLog(@"app: found %@", rows);
+        VCApp *app = [rows objectAtIndex:0];
+        [vines.apps findById:app.nick callback:^(NSMutableDictionary *found, VCError *error) {
+            if (error) {
+                NSLog(@"app: find failed %@", error);
+            } else {
+                NSLog(@"app: found %@", found);
+            }
+            VCApp *app = (VCApp *)found;
+            [self registerUser];
+            [self storeComments:app];
+        }];
+    }];
+}
+
+/*
+ * Signup a new user account, then immediately delete the user.
+ */
+- (void)registerUser
+{
+    [vines.users count:^(NSNumber *count, VCError *error) {
+        if (error) {
+            NSLog(@"user: count failed %@", error);
+        } else {
+            NSLog(@"user: count %@", count);
+        }
+    }];
+    
+    NSMutableDictionary *criteria = [[NSMutableDictionary alloc] init];
+    [vines.users all:criteria limit:10 skip:0 callback:^(NSMutableArray *found, VCError *error) {
+        if (error) {
+            NSLog(@"user: find failed %@", error);
+        } else {
+            NSLog(@"user: found %@", found);
+        }
+    }];
+    
+    NSString *username = [NSString stringWithFormat:@"demo-user@%@", vines.domain];
+    NSMutableDictionary *signup = [NSMutableDictionary dictionaryWithObjectsAndKeys:username, @"id", @"passw0rd", @"password", nil];
+    [vines.users save:signup callback:^(NSMutableDictionary *result, VCError *error) {
+        if (error) {
+            NSLog(@"user: save failed %@", error);
+        } else {
+            NSLog(@"user: save succeeded %@", result);
+            [self deleteUser:username];
+        }
+    }];
+}
+
+/*
+ * Find a Vines Cloud user account by its ID, then delete the user.
+ */
+- (void)deleteUser:(NSString *)username
+{
+    [vines.users findById:username callback:^(NSMutableDictionary *found, VCError *error) {
+        if (error) {
+            NSLog(@"user: find failed %@", error);
+            return;
+        }
+        NSLog(@"user: found by id %@", found);
+        [vines.users removeById:[found objectForKey:@"id"] callback:^(NSMutableDictionary *deleted, VCError *error) {
+            if (error) {
+                NSLog(@"user: delete failed %@", error);
+            } else {
+                NSLog(@"user: delete succeeded %@", deleted);
+            }
+        }];
+    }];
+}
+
+/*
+ * Demonstrates how to find the list of Vines Cloud storage classes in which
+ * JSON objects may be stored, counting, saving, querying, and deleting exmaple
+ * Comment objects.
+ */
+- (void)storeComments:(VCApp *)app
+{
+    [app classes:^(NSMutableArray *rows, VCError *error) {
+        for (VCStorage *storage in rows) {
+            NSLog(@"storage: found class %@", [storage className]);
+        }
+    }];
+    
+    VCStorage *comments = [app storageForClass:@"Comment"];
+    
+    [comments count:^(NSNumber *count, VCError *error) {
+        if (error) {
+            NSLog(@"comment: count failed %@", error);
+        } else {
+            NSLog(@"comment: count %@", count);
+        }
+    }];
+    
+    [comments all:nil limit:10 skip:0 callback:^(NSMutableArray *rows, VCError *error) {
+        if (error) {
+            NSLog(@"comment: find failed %@", error);  
+        } else {
+            NSLog(@"comment: found first 10 %@", rows);
+        }
+    }];
+    
+    NSMutableDictionary *comment = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"This is a comment!", @"text", nil];
+    [comments save:comment callback:^(NSMutableDictionary *result, VCError *error) {
+        if (error) {
+            NSLog(@"comment: save failed %@", error);
+        } else {
+            NSLog(@"comment: save succeeded %@", result);
+            [result setObject:@"This is an updated comment!" forKey:@"text"];
+            [comments save:result callback:^(NSMutableDictionary *result, VCError *error) {
+                NSLog(@"comment: update succeeded %@", result);
+                [self deleteComment:[result valueForKey:@"id"] comments:comments];
+            }];
+        }
+    }];
+}
+
+/*
+ * Find a storage object by its ID, then delete it.
+ */
+- (void)deleteComment:(NSString *)commentId comments:(VCStorage *)comments
+{
+    [comments findById:commentId callback:^(NSMutableDictionary *found, VCError *error) {
+        if (error) {
+            NSLog(@"comment: find failed %@", error);
+            return;
+        }
+        NSLog(@"comment: found by id %@", found);
+        [comments removeById:[found objectForKey:@"id"] callback:^(NSMutableDictionary *deleted, VCError *error) {
+            if (error) {
+                NSLog(@"comment: delete failed %@", error);
+            } else {
+                NSLog(@"comment: delete succeeded %@", deleted);
+            }
+        }];
     }];
 }
 
