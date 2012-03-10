@@ -57,10 +57,10 @@
                 NSLog(@"app: find failed %@", error);
             } else {
                 NSLog(@"app: found %@", found);
+                VCApp *app = (VCApp *)found;
+                [self registerUser];
+                [self storeComments:app];
             }
-            VCApp *app = (VCApp *)found;
-            [self registerUser];
-            [self storeComments:app];
         }];
     }];
 }
