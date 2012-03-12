@@ -72,6 +72,23 @@ NSMutableDictionary *comment = [NSMutableDictionary dictionaryWithObjectsAndKeys
 }];
 ```
 
+### Pubsub Channels
+
+```objectivec
+VCChannel *comments = [app channelForName:@"comments"];
+
+// subscribe so messages published to the channel will be passed to the callback block
+[comments subscribe:^(NSMutableDictionary *message) {
+    NSLog(@"comment: received on channel %@", message);
+    // unsubscribe from the channel after one message
+    [comments unsubscribe];
+}];
+
+// publish a comment to the channel
+NSMutableDictionary *comment = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"This is a comment!", @"text", nil];
+[comments publish:comment];
+```
+
 ## Dependencies
 
 This library requires Xcode 4.2 and iOS 5.0 or better.
