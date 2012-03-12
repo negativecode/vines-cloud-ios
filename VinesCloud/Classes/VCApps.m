@@ -3,10 +3,11 @@
 
 @implementation VCApps
 
-- (id)initWithBaseUrl:(NSURL *)url
+- (id)initWithBaseUrl:(NSURL *)url vines:(VinesCloud *)client
 {
     if (self = [super init]) {
         baseUrl = url;
+        vines = client;
     }
     return self;
 }
@@ -19,7 +20,7 @@
 
 - (id)build:(NSMutableDictionary *)object
 {
-    return [[VCApp alloc] initWithBaseUrl:baseUrl values:object];
+    return [[VCApp alloc] initWithBaseUrl:baseUrl values:object vines:vines];
 }
 
 @end

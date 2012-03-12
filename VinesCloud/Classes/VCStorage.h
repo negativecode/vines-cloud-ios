@@ -5,7 +5,7 @@
     NSURL *baseUrl;
 }
 
-@property (readonly, retain) NSString *className;
+@property (readonly, strong) NSString *className;
 
 - (id)initWithBaseUrl:(NSURL *)baseUrl className:(NSString *)className;
 

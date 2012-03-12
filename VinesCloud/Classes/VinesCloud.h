@@ -1,22 +1,32 @@
 #import <Foundation/Foundation.h>
+#import "XMPPFramework.h"
 #import "VCApp.h"
 #import "VCApps.h"
+#import "VCChannel.h"
 #import "VCDelegate.h"
+#import "VCError.h"
 #import "VCResource.h"
 #import "VCRequest.h"
 #import "VCStorage.h"
 #import "VCUsers.h"
+#import "VCXmppDelegate.h"
+
+@class VCApps;
 
 @interface VinesCloud : NSObject {
     NSURL *baseUrl;
+    VCXmppDelegate *xmppDelegate;
 }
 
-@property (readonly, retain) NSString *domain;
-@property (readonly, retain) VCApps *apps;
-@property (readonly, retain) VCUsers *users;
+@property (readonly, strong) NSString *domain;
+@property (readonly, strong) VCApps *apps;
+@property (readonly, strong) VCUsers *users;
+@property (readonly, strong) XMPPStream *xmppStream;
 
 - (id)initWithDomain:(NSString *)domain;
 
-- (void)authenticateWithUsername:(NSString *)username password:(NSString *)password callback:(void(^)(NSMutableDictionary *user, VCError *error))callback;
+- (void)authenticateWithUsername:(NSString *)username password:(NSString *)password callback:(VCObjectResultBlock)callback;
+
+- (void)connectXmppStreamWithUser:(NSMutableDictionary *)user password:(NSString *)password callback:(VCObjectResultBlock)callback;
 
 @end

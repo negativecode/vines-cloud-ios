@@ -13,7 +13,7 @@
     return self;
 }
 
-- (void)count:(void(^)(NSNumber *, VCError *))callback
+- (void)count:(VCCountResultBlock)callback
 {
     VCRequest *request = [VCRequest getWithUrl:[self url:@"?limit=1"]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
@@ -25,13 +25,13 @@
     }];
 }
 
-- (void)findById:(NSString *)objectId callback:(void(^)(NSMutableDictionary *, VCError *))callback
+- (void)findById:(NSString *)objectId callback:(VCObjectResultBlock)callback
 {
     NSDictionary *criteria = [[NSDictionary alloc] initWithObjectsAndKeys:objectId, @"id", nil];
     [self find:criteria callback:callback];
 }
 
-- (void)find:(NSDictionary *)options callback:(void(^)(NSMutableDictionary *, VCError *))callback
+- (void)find:(NSDictionary *)options callback:(VCObjectResultBlock)callback
 {
     NSString *url = [NSString stringWithFormat:@"/%@", [options valueForKey:@"id"]];
     VCRequest *request = [VCRequest getWithUrl:[self url:url]];
@@ -44,12 +44,12 @@
     }];
 }
 
-- (void)all:(NSDictionary *)options callback:(void(^)(NSMutableArray *, VCError *))callback
+- (void)all:(NSDictionary *)options callback:(VCListResultBlock)callback
 {
     [self all:options limit:500 skip:0 callback:callback];
 }
 
-- (void)all:(NSDictionary *)options limit:(int)limit skip:(int)skip callback:(void(^)(NSMutableArray *, VCError *))callback
+- (void)all:(NSDictionary *)options limit:(int)limit skip:(int)skip callback:(VCListResultBlock)callback
 {
     NSString *url = [[NSString alloc] initWithFormat:@"?limit=%d&skip=%d", limit, skip];
     VCRequest *request = [VCRequest getWithUrl:[self url:url]];
@@ -67,7 +67,7 @@
     }];
 }
 
-- (void)save:(NSMutableDictionary *)object callback:(void(^)(NSMutableDictionary *, VCError *))callback
+- (void)save:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
 {
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:0 error:&error];
@@ -97,13 +97,13 @@
     }
 }
 
-- (void)removeById:(NSString *)objectId callback:(void(^)(NSMutableDictionary *, VCError *))callback
+- (void)removeById:(NSString *)objectId callback:(VCObjectResultBlock)callback
 {
     NSMutableDictionary *criteria = [[NSMutableDictionary alloc] initWithObjectsAndKeys:objectId, @"id", nil];
     [self remove:criteria callback:callback];
 }
 
-- (void)remove:(NSMutableDictionary *)options callback:(void(^)(NSMutableDictionary *, VCError *))callback
+- (void)remove:(NSMutableDictionary *)options callback:(VCObjectResultBlock)callback
 {
     NSString *url = [NSString stringWithFormat:@"/%@", [options valueForKey:@"id"]];
     VCRequest *request = [VCRequest deleteWithUrl:[self url:url]];

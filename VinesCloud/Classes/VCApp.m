@@ -7,19 +7,21 @@
 @synthesize name;
 @synthesize nick;
 @synthesize pubsub;
+@synthesize vines;
 
-- (id)initWithBaseUrl:(NSURL *)url values:(NSDictionary *)object
+- (id)initWithBaseUrl:(NSURL *)url values:(NSDictionary *)object vines:(VinesCloud *)client
 {
     if (self = [super init]) {
         baseUrl = url;
         name = [object objectForKey:@"name"];
         nick = [object objectForKey:@"nick"];
         pubsub = [object objectForKey:@"pubsub"];
+        vines = client;
     }
     return self;
 }
 
-- (void)classes:(void(^)(NSMutableArray *, VCError *error))callback
+- (void)classes:(VCListResultBlock)callback
 {
     VCRequest *request = [VCRequest getWithUrl:[self url:@"/classes"]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
@@ -40,6 +42,11 @@
 - (VCStorage *)storageForClass:(NSString *)className
 {
     return [[VCStorage alloc] initWithBaseUrl:[self url:@""] className:className];
+}
+
+- (VCChannel *)channelForName:(NSString *)channelName
+{
+    return [[VCChannel alloc] initWithName:channelName app:self];
 }
 
 - (NSURL *)url:(NSString *)fragment

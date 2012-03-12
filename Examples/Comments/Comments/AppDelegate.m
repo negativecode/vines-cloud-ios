@@ -60,6 +60,7 @@
                 VCApp *app = (VCApp *)found;
                 [self registerUser];
                 [self storeComments:app];
+                [self publishToChannels:app];
             }
         }];
     }];
@@ -185,6 +186,42 @@
             }
         }];
     }];
+}
+
+/*
+ * Create and subscribe to a "comments" pubsub channel, send some messages, then unsubscribe.
+ */
+- (void)publishToChannels:(VCApp *)app
+{
+    __block int received = 0;
+    
+    VCChannel *comments = [app channelForName:@"comments"];
+    [comments subscribe:^(NSMutableDictionary *message) {
+        NSLog(@"comment: received on channel %@", message);
+        received++;
+        if (received == 2) {
+            NSLog(@"comment: unsubscribe from channel");
+            [comments unsubscribe];
+        }
+    }];
+
+    NSDictionary *comment = [self commentForString:@"This is a comment!"];
+    [comments publish:comment];
+    
+    NSDictionary *comment2 = [self commentForString:@"This is another comment!"];
+    [comments publish:comment2];
+}
+
+/*
+ * Return a comment suitable for publishing to a pubsub channel.
+ */
+- (NSMutableDictionary *)commentForString:(NSString *)text
+{
+    NSNumber *no = [NSNumber numberWithBool:NO];
+    NSMutableDictionary *comment = [[NSMutableDictionary alloc] init];
+    [comment setObject:text forKey:@"text"];
+    [comment setObject:no forKey:@"spam"];
+    return comment;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

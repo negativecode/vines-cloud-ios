@@ -19,4 +19,8 @@
 
 - (void)deleteComment:(NSString *)commentId comments:(VCStorage *)comments;
 
+- (void)publishToChannels:(VCApp *)app;
+
+- (NSMutableDictionary *)commentForString:(NSString *)text;
+
 @end

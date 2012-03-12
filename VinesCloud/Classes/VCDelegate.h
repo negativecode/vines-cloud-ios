@@ -7,7 +7,7 @@
     void (^callback)(NSMutableDictionary *, NSHTTPURLResponse *, VCError *);
 }
 
-@property (retain) NSMutableData *responseData;
+@property (strong) NSMutableData *responseData;
 
 - (id)initWithCallback:(void(^)(NSMutableDictionary *, NSHTTPURLResponse *, VCError *))aCallback;
 
