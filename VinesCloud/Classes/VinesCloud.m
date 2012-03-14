@@ -13,7 +13,7 @@
 {
     if (self = [super init]) {
         domain = aDomain;
-        NSString *url = [[NSString alloc] initWithFormat:@"http://%@", domain];
+        NSString *url = [[NSString alloc] initWithFormat:@"https://%@", domain];
         baseUrl = [NSURL URLWithString: url];
         users = [[VCUsers alloc] initWithBaseUrl:baseUrl];
         apps = [[VCApps alloc] initWithBaseUrl:baseUrl vines:self];
