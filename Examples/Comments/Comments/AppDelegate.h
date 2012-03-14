@@ -3,6 +3,7 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate> {
     VinesCloud *vines;
+    VCChannel *commentsChannel;
 }
 
 @property (strong, nonatomic) UIWindow *window;

@@ -24,7 +24,7 @@
     NSString *domain = @"wonderland.getvines.com";
     NSString *username = @"alice@wonderland.getvines.com";
     NSString *password = @"password";
-    
+
     vines = [[VinesCloud alloc] initWithDomain:domain];
     [vines authenticateWithUsername:username password:password callback:^(NSMutableDictionary *user, VCError *error) {
         NSLog(@"user: authentication %@ %@", user, error);
@@ -194,9 +194,9 @@
 - (void)publishToChannels:(VCApp *)app
 {
     __block int received = 0;
-    
-    VCChannel *comments = [app channelForName:@"comments"];
-    [comments subscribe:^(NSMutableDictionary *message) {
+
+    commentsChannel = [app channelForName:@"comments"];
+    [commentsChannel subscribe:^(NSMutableDictionary *message) {
         NSLog(@"comment: received on channel %@", message);
         received++;
         if (received == 2) {
@@ -206,10 +206,10 @@
     }];
 
     NSDictionary *comment = [self commentForString:@"This is a comment!"];
-    [comments publish:comment];
+    [commentsChannel publish:comment];
     
     NSDictionary *comment2 = [self commentForString:@"This is another comment!"];
-    [comments publish:comment2];
+    [commentsChannel publish:comment2];
 }
 
 /*
