@@ -201,7 +201,7 @@
         received++;
         if (received == 2) {
             NSLog(@"comment: unsubscribe from channel");
-            [comments unsubscribe];
+            [commentsChannel unsubscribe];
         }
     }];
 
