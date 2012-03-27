@@ -28,7 +28,7 @@
     vines = [[VinesCloud alloc] initWithDomain:domain];
     [vines authenticateWithUsername:username password:password callback:^(NSMutableDictionary *user, VCError *error) {
         NSLog(@"user: authentication %@ %@", user, error);
-        [self findVinesApps];
+        if (user) [self findVinesApps];
     }];
 }
 
@@ -189,7 +189,9 @@
 }
 
 /*
- * Create and subscribe to a "comments" pubsub channel, send some messages, then unsubscribe.
+ * Create a "comments" pubsub channel, subscribe to its stream of messages, and
+ * publish comments to it. Send messages to the comments channel from the Vines
+ * Cloud web console to see them appear in this demo app.
  */
 - (void)publishToChannels:(VCApp *)app
 {
@@ -197,12 +199,8 @@
 
     commentsChannel = [app channelForName:@"comments"];
     [commentsChannel subscribe:^(NSMutableDictionary *message) {
-        NSLog(@"comment: received on channel %@", message);
+        NSLog(@"comment: received message %d on channel %@", received, message);
         received++;
-        if (received == 2) {
-            NSLog(@"comment: unsubscribe from channel");
-            [commentsChannel unsubscribe];
-        }
     }];
 
     NSDictionary *comment = [self commentForString:@"This is a comment!"];
