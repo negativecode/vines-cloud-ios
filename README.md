@@ -21,7 +21,7 @@ VinesCloud *vines = [[VinesCloud alloc] initWithDomain:domain];
 [vines authenticateWithUsername:username password:password callback:^(NSMutableDictionary *user, VCError *error) {
     if (error) {
         NSLog(@"user: authentication failed %@", error);
-        return;   
+        return;
     }
     // user, storage, and channel calls . . .
 }];
@@ -31,7 +31,8 @@ VinesCloud *vines = [[VinesCloud alloc] initWithDomain:domain];
 
 ```objectivec
 // count the number of user objects
-[vines.users count:^(NSNumber *count, VCError *error) {
+VCQuery *query = [vines.users query];
+[query count:^(NSNumber *count, VCError *error) {
     NSLog(@"user: count %@", count);
 }];
 
@@ -53,7 +54,8 @@ NSMutableDictionary *signup = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 VCStorage *comments = [app storageForClass:@"Comment"];
 
 // count the number of comment objects
-[comments count:^(NSNumber *count, VCError *error) {
+VCQuery *query = [comments query];
+[query count:^(NSNumber *count, VCError *error) {
     NSLog(@"comment: count %@", count);
 }];
 
@@ -69,6 +71,32 @@ NSMutableDictionary *comment = [NSMutableDictionary dictionaryWithObjectsAndKeys
             NSLog(@"comment: update succeeded %@", result);
         }];
     }
+}];
+```
+
+### Complex Queries
+
+```objectivec
+VCStorage *comments = [app storageForClass:@"Comment"];
+
+// create a query with VinesQL syntax
+VCQuery *query = [comments query:@"text exists and text like :match"];
+[query whereKey:@"match" is:@"comment!"];
+
+// count matching comments
+[query count:^(NSNumber *count, VCError *error) {
+    NSLog(@"comment: count %@", count);
+}];
+
+// find first matching comment object
+[query first:^(NSMutableDictionary *obj, VCError *error) {
+    NSLog(@"comment: found first %@", obj);
+}];
+
+// use limit and skip to find first 10 matching comments
+[query limit:10 skip:0];
+[query all:^(NSMutableArray *rows, VCError *error) {
+    NSLog(@"comment: found first 10 %@", rows);
 }];
 ```
 
