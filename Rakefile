@@ -10,7 +10,7 @@ CLOBBER.include('pkg', 'VinesCloud.framework')
 desc 'Build distributable packages'
 task :build => :xcode do
   # create package task after framework compilation so it's included in FileList
-  Rake::PackageTask.new('vines-cloud-ios', '0.1.1') do |pkg|
+  Rake::PackageTask.new('vines-cloud-ios', '0.2.0') do |pkg|
     pkg.package_files = FileList['LICENSE', 'README.md', 'Examples/**/*', 'VinesCloud/**/*', 'VinesCloud.framework/**/*']
     pkg.need_zip = true
   end
