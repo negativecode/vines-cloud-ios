@@ -37,7 +37,8 @@
  * apps in the account and use the first app for the rest of the example code.
  */
 - (void)findVinesApps {
-    [vines.apps count:^(NSNumber *count, VCError *error) {
+    VCQuery *query = [vines.apps query];
+    [query count:^(NSNumber *count, VCError *error) {
         if (error) {
             NSLog(@"app: count failed %@", error);
         } else {
@@ -45,14 +46,14 @@
         }
     }];
     
-    [vines.apps all:nil callback:^(NSMutableArray *rows, VCError *error) {
+    [query all:^(NSMutableArray *rows, VCError *error) {
         if (error) {
             NSLog(@"app: find failed %@", error);
             return;
         }
         NSLog(@"app: found %@", rows);
         VCApp *app = [rows objectAtIndex:0];
-        [vines.apps findById:app.nick callback:^(NSMutableDictionary *found, VCError *error) {
+        [query find:app.nick callback:^(NSMutableDictionary *found, VCError *error) {
             if (error) {
                 NSLog(@"app: find failed %@", error);
             } else {
@@ -71,16 +72,17 @@
  */
 - (void)registerUser
 {
-    [vines.users count:^(NSNumber *count, VCError *error) {
+    VCQuery *query = [vines.users query];
+    [query count:^(NSNumber *count, VCError *error) {
         if (error) {
             NSLog(@"user: count failed %@", error);
         } else {
             NSLog(@"user: count %@", count);
         }
     }];
-    
-    NSMutableDictionary *criteria = [[NSMutableDictionary alloc] init];
-    [vines.users all:criteria limit:10 skip:0 callback:^(NSMutableArray *found, VCError *error) {
+
+    [query limit:10 skip:0];
+    [query all:^(NSMutableArray *found, VCError *error) {
         if (error) {
             NSLog(@"user: find failed %@", error);
         } else {
@@ -105,7 +107,8 @@
  */
 - (void)deleteUser:(NSString *)username
 {
-    [vines.users findById:username callback:^(NSMutableDictionary *found, VCError *error) {
+    VCQuery *query = [vines.users query];
+    [query find:username callback:^(NSMutableDictionary *found, VCError *error) {
         if (error) {
             NSLog(@"user: find failed %@", error);
             return;
@@ -123,7 +126,7 @@
 
 /*
  * Demonstrates how to find the list of Vines Cloud storage classes in which
- * JSON objects may be stored, counting, saving, querying, and deleting exmaple
+ * JSON objects may be stored, counting, saving, querying, and deleting example
  * Comment objects.
  */
 - (void)storeComments:(VCApp *)app
@@ -135,16 +138,39 @@
     }];
     
     VCStorage *comments = [app storageForClass:@"Comment"];
-    
-    [comments count:^(NSNumber *count, VCError *error) {
+    VCQuery *query = [comments query];
+    [query count:^(NSNumber *count, VCError *error) {
         if (error) {
             NSLog(@"comment: count failed %@", error);
         } else {
             NSLog(@"comment: count %@", count);
         }
     }];
+
+    // complex query with where clause
+    query = [comments query:@"text exists and text like :match"];
+    [query whereKey:@"match" is:@"comment!"];
+    [query count:^(NSNumber *count, VCError *error) {
+        if (error) {
+            NSLog(@"comment: count failed %@", error);
+        } else {
+            NSLog(@"comment: count %@", count);
+        }
+    }];
+
+    // find first matching comment object
+    [query first:^(NSMutableDictionary *obj, VCError *error) {
+        if (error) {
+            NSLog(@"comment: find first failed %@", error);
+        } else {
+            NSLog(@"comment: found first %@", obj);
+        }
+    }];
     
-    [comments all:nil limit:10 skip:0 callback:^(NSMutableArray *rows, VCError *error) {
+    // use limit and skip to find first 10 comments
+    query = [comments query];
+    [query limit:10 skip:0];
+    [query all:^(NSMutableArray *rows, VCError *error) {
         if (error) {
             NSLog(@"comment: find failed %@", error);  
         } else {
@@ -172,7 +198,8 @@
  */
 - (void)deleteComment:(NSString *)commentId comments:(VCStorage *)comments
 {
-    [comments findById:commentId callback:^(NSMutableDictionary *found, VCError *error) {
+    VCQuery *query = [comments query];
+    [query find:commentId callback:^(NSMutableDictionary *found, VCError *error) {
         if (error) {
             NSLog(@"comment: find failed %@", error);
             return;

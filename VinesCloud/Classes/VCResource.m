@@ -13,58 +13,30 @@
     return self;
 }
 
-- (void)count:(VCCountResultBlock)callback
+- (VCQuery *)query
 {
-    VCRequest *request = [VCRequest getWithUrl:[self url:@"?limit=1"]];
-    [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
-        if (error) {
-            callback(nil, error);
-        } else {
-            callback([result valueForKey:@"total"], nil);
-        }
-    }];
+    return [[VCQuery alloc] initWithResource:self];
 }
 
-- (void)findById:(NSString *)objectId callback:(VCObjectResultBlock)callback
+- (VCQuery *)query:(NSString *)queryString
 {
-    NSDictionary *criteria = [[NSDictionary alloc] initWithObjectsAndKeys:objectId, @"id", nil];
-    [self find:criteria callback:callback];
+    VCQuery *query = [[VCQuery alloc] initWithResource:self];
+    [query where:queryString];
+    return query;
 }
 
-- (void)find:(NSDictionary *)options callback:(VCObjectResultBlock)callback
+- (VCQuery *)query:(NSString *)queryString criteria:(NSDictionary *)criteria
 {
-    NSString *url = [NSString stringWithFormat:@"/%@", [options valueForKey:@"id"]];
-    VCRequest *request = [VCRequest getWithUrl:[self url:url]];
-    [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
-        if (error) {
-            callback(nil, error);
-        } else {
-            callback([self build:result], nil);
-        }
-    }];
+    VCQuery *query = [[VCQuery alloc] initWithResource:self];
+    [query where:queryString criteria:criteria];
+    return query;
 }
 
-- (void)all:(NSDictionary *)options callback:(VCListResultBlock)callback
+- (VCQuery *)queryWithCriteria:(NSDictionary *)criteria
 {
-    [self all:options limit:500 skip:0 callback:callback];
-}
-
-- (void)all:(NSDictionary *)options limit:(int)limit skip:(int)skip callback:(VCListResultBlock)callback
-{
-    NSString *url = [[NSString alloc] initWithFormat:@"?limit=%d&skip=%d", limit, skip];
-    VCRequest *request = [VCRequest getWithUrl:[self url:url]];
-    [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
-        if (error) {
-            callback(nil, error);
-        } else {
-            NSArray *rows = [result valueForKey:@"rows"];
-            NSMutableArray *built = [[NSMutableArray alloc] init];
-            for (NSMutableDictionary *row in rows) {
-                [built addObject: [self build:row]];
-            }
-            callback(built, nil);
-        }
-    }];
+    VCQuery *query = [[VCQuery alloc] initWithResource:self];
+    [query where:@"" criteria:criteria];
+    return query;    
 }
 
 - (void)save:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
@@ -103,15 +75,15 @@
     [self remove:criteria callback:callback];
 }
 
-- (void)remove:(NSMutableDictionary *)options callback:(VCObjectResultBlock)callback
+- (void)remove:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
 {
-    NSString *url = [NSString stringWithFormat:@"/%@", [options valueForKey:@"id"]];
+    NSString *url = [NSString stringWithFormat:@"/%@", [object valueForKey:@"id"]];
     VCRequest *request = [VCRequest deleteWithUrl:[self url:url]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
             callback(nil, error);
         } else {
-            callback(options, nil);
+            callback(object, nil);
         }
     }];
 }

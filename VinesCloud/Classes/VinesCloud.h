@@ -9,6 +9,7 @@
 #import "VCRequest.h"
 #import "VCStorage.h"
 #import "VCUsers.h"
+#import "VCQuery.h"
 #import "VCXmppDelegate.h"
 
 @class VCApps;

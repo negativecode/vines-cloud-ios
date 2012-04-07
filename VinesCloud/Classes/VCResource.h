@@ -1,19 +1,20 @@
 #import <Foundation/Foundation.h>
 #import "VCError.h"
+#import "VCQuery.h"
+
+@class VCQuery;
 
 @interface VCResource : NSObject
 
 - (id)init;
 
-- (void)count:(VCCountResultBlock)callback;
+- (VCQuery *)query;
 
-- (void)find:(NSDictionary *)options callback:(VCObjectResultBlock)callback;
+- (VCQuery *)query:(NSString *)queryString;
 
-- (void)findById:(NSString *)objectId callback:(VCObjectResultBlock)callback;
+- (VCQuery *)query:(NSString *)queryString criteria:(NSDictionary *)criteria;
 
-- (void)all:(NSDictionary *)options callback:(VCListResultBlock)callback;
-
-- (void)all:(NSDictionary *)options limit:(int)limit skip:(int)skip callback:(VCListResultBlock)callback;
+- (VCQuery *)queryWithCriteria:(NSDictionary *)criteria;
 
 - (void)save:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback;
 
