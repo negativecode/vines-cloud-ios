@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "VCError.h"
 #import "VCQuery.h"
+#import "VCDeferred.h"
 
 @class VCQuery;
 
