@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "VCRequest.h"
 #import "VCResource.h"
+#import "VCDeferred.h"
 
 @class VCResource;
 
@@ -22,13 +23,13 @@
 
 - (void)where:(NSString *)queryString criteria:(NSDictionary *)criteria;
 
-- (void)find:(NSString *)objectId callback:(VCObjectResultBlock)callback;
+- (VCDeferred *)find:(NSString *)objectId callback:(VCObjectResultBlock)callback;
 
-- (void)all:(VCListResultBlock)callback;
+- (VCDeferred *)all:(VCListResultBlock)callback;
 
-- (void)first:(VCObjectResultBlock)callback;
+- (VCDeferred *)first:(VCObjectResultBlock)callback;
 
-- (void)count:(VCCountResultBlock)callback;
+- (VCDeferred *)count:(VCCountResultBlock)callback;
 
 - (NSString *)urlEncodeString:(NSString *)string;
 

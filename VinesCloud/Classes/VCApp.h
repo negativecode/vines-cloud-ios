@@ -4,6 +4,7 @@
 
 @class VinesCloud;
 @class VCChannel;
+@class VCDeferred;
 
 @interface VCApp : NSObject {
     NSURL *baseUrl;
@@ -16,7 +17,9 @@
 
 - (id)initWithBaseUrl:(NSURL *)url values:(NSDictionary *)object vines:(VinesCloud *)vines;
 
-- (void)classes:(VCListResultBlock)callback;
+- (VCDeferred *)classes:(VCListResultBlock)callback;
+
+- (VCDeferred *)channels:(VCListResultBlock)callback;
 
 - (VCStorage *)storageForClass:(NSString *)className;
 

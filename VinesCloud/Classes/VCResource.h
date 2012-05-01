@@ -16,11 +16,11 @@
 
 - (VCQuery *)queryWithCriteria:(NSDictionary *)criteria;
 
-- (void)save:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback;
+- (VCDeferred *)save:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback;
 
-- (void)remove:(NSMutableDictionary *)options callback:(VCObjectResultBlock)callback;
+- (VCDeferred *)remove:(NSMutableDictionary *)options callback:(VCObjectResultBlock)callback;
 
-- (void)removeById:(NSString *)objectId callback:(VCObjectResultBlock)callback;
+- (VCDeferred *)removeById:(NSString *)objectId callback:(VCObjectResultBlock)callback;
 
 - (id)build:(NSMutableDictionary *)object;
 

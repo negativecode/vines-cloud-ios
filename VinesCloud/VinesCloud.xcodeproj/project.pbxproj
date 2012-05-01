@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		632F7C32153F8265002C23CB /* VCDeferred.h in Headers */ = {isa = PBXBuildFile; fileRef = 632F7C30153F8265002C23CB /* VCDeferred.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		632F7C33153F8265002C23CB /* VCDeferred.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F7C31153F8265002C23CB /* VCDeferred.m */; };
 		6373EDDC152E0CC400D733B8 /* VCQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 6373EDDA152E0CC400D733B8 /* VCQuery.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6373EDDD152E0CC400D733B8 /* VCQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 6373EDDB152E0CC400D733B8 /* VCQuery.m */; };
 		63D93D35150A8B7E00E9DC95 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D93D34150A8B7E00E9DC95 /* Foundation.framework */; };
@@ -128,6 +130,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		632F7C30153F8265002C23CB /* VCDeferred.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCDeferred.h; sourceTree = "<group>"; };
+		632F7C31153F8265002C23CB /* VCDeferred.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VCDeferred.m; sourceTree = "<group>"; };
 		6373EDDA152E0CC400D733B8 /* VCQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCQuery.h; sourceTree = "<group>"; };
 		6373EDDB152E0CC400D733B8 /* VCQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VCQuery.m; sourceTree = "<group>"; };
 		63D93D31150A8B7E00E9DC95 /* libVinesCloud.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libVinesCloud.a; path = VinesCloud; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -296,6 +300,8 @@
 				63D93EF6150A8FE300E9DC95 /* VCApps.m */,
 				63F1EF50150D47E900C3642F /* VCChannel.h */,
 				63F1EF51150D47E900C3642F /* VCChannel.m */,
+				632F7C30153F8265002C23CB /* VCDeferred.h */,
+				632F7C31153F8265002C23CB /* VCDeferred.m */,
 				63D93EF7150A8FE300E9DC95 /* VCDelegate.h */,
 				63D93EF8150A8FE300E9DC95 /* VCDelegate.m */,
 				63D93EF9150A8FE300E9DC95 /* VCError.h */,
@@ -579,6 +585,7 @@
 				63F1EF54150D47E900C3642F /* VCChannel.h in Headers */,
 				6373EDDC152E0CC400D733B8 /* VCQuery.h in Headers */,
 				63F1EF56150D47E900C3642F /* VCXmppDelegate.h in Headers */,
+				632F7C32153F8265002C23CB /* VCDeferred.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -695,6 +702,7 @@
 				63F1EF55150D47E900C3642F /* VCChannel.m in Sources */,
 				63F1EF57150D47E900C3642F /* VCXmppDelegate.m in Sources */,
 				6373EDDD152E0CC400D733B8 /* VCQuery.m in Sources */,
+				632F7C33153F8265002C23CB /* VCDeferred.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -39,15 +39,17 @@
     return query;    
 }
 
-- (void)save:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
+- (VCDeferred *)save:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
 {
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:0 error:&error];
     NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 
+    VCDeferred *deferred = [[VCDeferred alloc] init];
     void (^block)(NSMutableDictionary *, NSHTTPURLResponse *, VCError *) = ^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
             callback(nil, error);
+            [deferred reject:error];
             return;
         }
         NSString *location = [[response allHeaderFields] objectForKey:@"Location"];
@@ -57,6 +59,7 @@
             [object setObject:objectId forKey:@"id"];
         }
         callback(object, nil);
+        [deferred resolve:object];
     };
 
     if ([object valueForKey:@"id"]) {
@@ -67,25 +70,30 @@
         VCRequest *request = [VCRequest postWithUrl:[self url:@""]];
         [request executeWithBody:json callback:block];
     }
+    return deferred;
 }
 
-- (void)removeById:(NSString *)objectId callback:(VCObjectResultBlock)callback
+- (VCDeferred *)removeById:(NSString *)objectId callback:(VCObjectResultBlock)callback
 {
     NSMutableDictionary *criteria = [[NSMutableDictionary alloc] initWithObjectsAndKeys:objectId, @"id", nil];
-    [self remove:criteria callback:callback];
+    return [self remove:criteria callback:callback];
 }
 
-- (void)remove:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
+- (VCDeferred *)remove:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
 {
+    VCDeferred *deferred = [[VCDeferred alloc] init];
     NSString *url = [NSString stringWithFormat:@"/%@", [object valueForKey:@"id"]];
     VCRequest *request = [VCRequest deleteWithUrl:[self url:url]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
             callback(nil, error);
+            [deferred reject:error];
         } else {
             callback(object, nil);
+            [deferred resolve:object];
         }
     }];
+    return deferred;
 }
 
 - (id)build:(NSMutableDictionary *)object

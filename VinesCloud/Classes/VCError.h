@@ -10,6 +10,6 @@
 
 @end
 
-typedef void (^VCObjectResultBlock)(NSMutableDictionary *, VCError *);
-typedef void (^VCListResultBlock)(NSMutableArray *, VCError *);
-typedef void (^VCCountResultBlock)(NSNumber *, VCError *);
+typedef void (^VCObjectResultBlock)(NSMutableDictionary *found, VCError *error);
+typedef void (^VCListResultBlock)(NSMutableArray *rows, VCError *error);
+typedef void (^VCCountResultBlock)(NSNumber *count, VCError *error);

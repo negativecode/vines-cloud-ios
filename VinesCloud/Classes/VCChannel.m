@@ -115,4 +115,9 @@
     }
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"VCChannel: name=%@ app=%@", name, app];
+}
+
 @end

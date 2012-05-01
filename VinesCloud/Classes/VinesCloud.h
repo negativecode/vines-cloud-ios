@@ -4,6 +4,7 @@
 #import "VCApps.h"
 #import "VCChannel.h"
 #import "VCDelegate.h"
+#import "VCDeferred.h"
 #import "VCError.h"
 #import "VCResource.h"
 #import "VCRequest.h"
@@ -26,8 +27,8 @@
 
 - (id)initWithDomain:(NSString *)domain;
 
-- (void)authenticateWithUsername:(NSString *)username password:(NSString *)password callback:(VCObjectResultBlock)callback;
+- (VCDeferred *)authenticateWithUsername:(NSString *)username password:(NSString *)password callback:(VCObjectResultBlock)callback;
 
-- (void)connectXmppStreamWithUser:(NSMutableDictionary *)user password:(NSString *)password callback:(VCObjectResultBlock)callback;
+- (void)connectXmppStreamWithUser:(NSMutableDictionary *)user password:(NSString *)password callback:(VCObjectResultBlock)callback deferred:(VCDeferred *)deferred;
 
 @end
