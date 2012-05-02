@@ -100,6 +100,25 @@ VCQuery *query = [comments query:@"text exists and text like :match"];
 }];
 ```
 
+### Register Callbacks on a Deferred Result
+
+Each API method returns a VCDeferred object on which we can register callback functions. This lets us consolidate error handling in one place and avoids nested callbacks.
+
+```objectivec
+VCStorage *comments = [app storageForClass:@"Comment"];
+VCQuery *query = [comments query];
+VCDeferred *result = [query all];
+[result fail:^(VCError *error) {
+    NSLog(@"comment: find failed %@", error);
+}];
+[result done:^(NSObject *found) {
+    NSMutableArray *rows = (NSMutableArray *)found;
+    for (NSMutableDictionary *comment in rows) {
+        NSLog(@"comment: found %@", comment);
+    }
+}];
+```
+
 ### Pubsub Channels
 
 ```objectivec
