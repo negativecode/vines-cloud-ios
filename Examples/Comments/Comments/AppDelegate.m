@@ -199,13 +199,17 @@
 - (void)deleteComment:(NSString *)commentId comments:(VCStorage *)comments
 {
     VCQuery *query = [comments query];
-    [query find:commentId callback:^(NSMutableDictionary *found, VCError *error) {
-        if (error) {
-            NSLog(@"comment: find failed %@", error);
-            return;
-        }
+
+    VCDeferred *result = [query find:commentId];
+    [result fail:^(VCError *error) {
+        NSLog(@"comment: find failed %@", error);
+    }];
+    [result done:^(NSObject *found) {
         NSLog(@"comment: found by id %@", found);
-        [comments removeById:[found objectForKey:@"id"] callback:^(NSMutableDictionary *deleted, VCError *error) {
+    }];
+    [result done:^(NSObject *found) {
+        NSMutableDictionary *comment = (NSMutableDictionary *)found;
+        [comments removeById:[comment objectForKey:@"id"] callback:^(NSMutableDictionary *deleted, VCError *error) {
             if (error) {
                 NSLog(@"comment: delete failed %@", error);
             } else {
