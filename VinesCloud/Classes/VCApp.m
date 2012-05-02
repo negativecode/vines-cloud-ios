@@ -21,13 +21,18 @@
     return self;
 }
 
+- (VCDeferred *)classes
+{
+    return [self classes:nil];
+}
+
 - (VCDeferred *)classes:(VCListResultBlock)callback
 {
     VCDeferred *deferred = [[VCDeferred alloc] init];
     VCRequest *request = [VCRequest getWithUrl:[self url:@"/classes"]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
-            callback(nil, error);
+            if (callback) callback(nil, error);
             [deferred reject:error];
         } else {
             NSArray *rows = [result valueForKey:@"rows"];
@@ -36,11 +41,16 @@
                 id storage = [[VCStorage alloc] initWithBaseUrl:[self url:@""] className:[row objectForKey:@"name"]];
                 [built addObject: storage];
             }
-            callback(built, nil);
+            if (callback) callback(built, nil);
             [deferred resolve:built];
         }
     }];
     return deferred;
+}
+
+- (VCDeferred *)channels
+{
+    return [self channels:nil];
 }
 
 - (VCDeferred *)channels:(VCListResultBlock)callback
@@ -49,7 +59,7 @@
     VCRequest *request = [VCRequest getWithUrl:[self url:@"/channels"]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
-            callback(nil, error);
+            if (callback) callback(nil, error);
             [deferred reject:error];
         } else {
             NSArray *rows = [result valueForKey:@"rows"];
@@ -58,7 +68,7 @@
                 id channel = [[VCChannel alloc] initWithName:[row objectForKey:@"name"] app:self];
                 [built addObject: channel];
             }
-            callback(built, nil);
+            if (callback) callback(built, nil);
             [deferred resolve:built];
         }
     }];

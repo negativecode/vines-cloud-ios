@@ -23,12 +23,16 @@
 
 - (void)where:(NSString *)queryString criteria:(NSDictionary *)criteria;
 
+- (VCDeferred *)find:(NSString *)objectId;
 - (VCDeferred *)find:(NSString *)objectId callback:(VCObjectResultBlock)callback;
 
+- (VCDeferred *)all;
 - (VCDeferred *)all:(VCListResultBlock)callback;
 
+- (VCDeferred *)first;
 - (VCDeferred *)first:(VCObjectResultBlock)callback;
 
+- (VCDeferred *)count;
 - (VCDeferred *)count:(VCCountResultBlock)callback;
 
 - (NSString *)urlEncodeString:(NSString *)string;

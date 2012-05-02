@@ -17,8 +17,10 @@
 
 - (id)initWithBaseUrl:(NSURL *)url values:(NSDictionary *)object vines:(VinesCloud *)vines;
 
+- (VCDeferred *)classes;
 - (VCDeferred *)classes:(VCListResultBlock)callback;
 
+- (VCDeferred *)channels;
 - (VCDeferred *)channels:(VCListResultBlock)callback;
 
 - (VCStorage *)storageForClass:(NSString *)className;

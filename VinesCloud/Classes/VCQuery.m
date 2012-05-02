@@ -36,6 +36,11 @@
     [criteria addEntriesFromDictionary:aCriteria];
 }
 
+- (VCDeferred *)find:(NSString *)objectId
+{
+    return [self find:objectId callback:nil];
+}
+
 - (VCDeferred *)find:(NSString *)objectId callback:(VCObjectResultBlock)callback
 {
     VCDeferred *deferred = [[VCDeferred alloc] init];
@@ -43,15 +48,20 @@
     VCRequest *request = [VCRequest getWithUrl:[resource url:url]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
-            callback(nil, error);
+            if (callback) callback(nil, error);
             [deferred reject:error];
         } else {
             id built = [resource build:result];
-            callback(built, nil);
+            if (callback) callback(built, nil);
             [deferred resolve:built];
         }
     }];
     return deferred;
+}
+
+- (VCDeferred *)all
+{
+    return [self all:nil];
 }
 
 - (VCDeferred *)all:(VCListResultBlock)callback
@@ -65,7 +75,7 @@
     VCRequest *request = [VCRequest getWithUrl:[resource url:url]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
-            callback(nil, error);
+            if (callback) callback(nil, error);
             [deferred reject:error];
         } else {
             NSArray *rows = [result valueForKey:@"rows"];
@@ -73,11 +83,16 @@
             for (NSMutableDictionary *row in rows) {
                 [built addObject: [resource build:row]];
             }
-            callback(built, nil);
+            if (callback) callback(built, nil);
             [deferred resolve:built];
         }
     }];
     return deferred;
+}
+
+- (VCDeferred *)first
+{
+    return [self first:nil];
 }
 
 - (VCDeferred *)first:(VCObjectResultBlock)callback
@@ -85,16 +100,16 @@
     VCDeferred *deferred = [[VCDeferred alloc] init];
     VCListResultBlock block = ^(NSMutableArray *rows, VCError *error) {
         if (error) {
-            callback(nil, error);
+            if (callback) callback(nil, error);
             [deferred reject:error];
             return;
         }
         if ([rows count] > 0) {
             id first = [rows objectAtIndex:0];
-            callback(first, nil);
+            if (callback) callback(first, nil);
             [deferred resolve:first];
         } else {
-            callback(nil, nil);
+            if (callback) callback(nil, nil);
             [deferred resolve:nil];
         }
     };
@@ -103,6 +118,11 @@
     skip = 0;
     [self all:block];
     return deferred;
+}
+
+- (VCDeferred *)count
+{
+    return [self count:nil];
 }
 
 - (VCDeferred *)count:(VCCountResultBlock)callback
@@ -116,11 +136,11 @@
     VCRequest *request = [VCRequest getWithUrl:[resource url:url]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
-            callback(nil, error);
+            if (callback) callback(nil, error);
             [deferred reject:error];
         } else {
             id total = [result valueForKey:@"total"];
-            callback(total, nil);
+            if (callback) callback(total, nil);
             [deferred resolve:total];
         }
     }];

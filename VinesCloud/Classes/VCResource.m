@@ -39,6 +39,11 @@
     return query;    
 }
 
+- (VCDeferred *)save:(NSMutableDictionary *)object
+{
+    return [self save:object callback:nil];
+}
+
 - (VCDeferred *)save:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
 {
     NSError *error;
@@ -48,7 +53,7 @@
     VCDeferred *deferred = [[VCDeferred alloc] init];
     void (^block)(NSMutableDictionary *, NSHTTPURLResponse *, VCError *) = ^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
-            callback(nil, error);
+            if (callback) callback(nil, error);
             [deferred reject:error];
             return;
         }
@@ -58,7 +63,7 @@
             NSString *objectId = [pieces objectAtIndex:[pieces count] - 1];
             [object setObject:objectId forKey:@"id"];
         }
-        callback(object, nil);
+        if (callback) callback(object, nil);
         [deferred resolve:object];
     };
 
@@ -73,10 +78,20 @@
     return deferred;
 }
 
+- (VCDeferred *)removeById:(NSString *)objectId
+{
+    return [self removeById:objectId callback:nil];
+}
+
 - (VCDeferred *)removeById:(NSString *)objectId callback:(VCObjectResultBlock)callback
 {
     NSMutableDictionary *criteria = [[NSMutableDictionary alloc] initWithObjectsAndKeys:objectId, @"id", nil];
     return [self remove:criteria callback:callback];
+}
+
+- (VCDeferred *)remove:(NSMutableDictionary *)object
+{
+    return [self remove:object callback:nil];
 }
 
 - (VCDeferred *)remove:(NSMutableDictionary *)object callback:(VCObjectResultBlock)callback
@@ -86,10 +101,10 @@
     VCRequest *request = [VCRequest deleteWithUrl:[self url:url]];
     [request execute:^(NSMutableDictionary *result, NSHTTPURLResponse *response, VCError *error) {
         if (error) {
-            callback(nil, error);
+            if (callback) callback(nil, error);
             [deferred reject:error];
         } else {
-            callback(object, nil);
+            if (callback) callback(object, nil);
             [deferred resolve:object];
         }
     }];
